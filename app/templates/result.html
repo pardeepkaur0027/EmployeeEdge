@@ -3,49 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prediction &amp; Plan -- EmployeeEdge</title>
+    <title>Prediction &amp; Plan &middot; EmployeeEdge</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <header class="hero compact">
     <div class="wrap">
-        <h1 class="logo-text">EmployeeEdge</h1>
-        <p class="tagline">Retention risk explained &mdash; and a plan to act on it.</p>
+        <div class="brand-row">
+            <span class="brand-mark">E</span>
+            <h1 class="logo-text">EmployeeEdge</h1>
+            <span class="hero-brand-badge">ATTRITION ANALYST</span>
+        </div>
+        <p class="tagline">Risk explained &mdash; and a plan to act on it.</p>
     </div>
 </header>
 
 <main class="wrap">
-
     <a class="back-link" href="{{ url_for('index') }}">&larr; Analyze another employee</a>
 
-    <section class="card risk-card {{ level }}-risk">
-        <div class="gauge-number">{{ '%.0f'|format(proba * 100) }}%</div>
-        <div class="gauge-label">predicted attrition risk</div>
+    <!-- Risk gauge -->
+    <section class="card risk-card {{ level }}">
+        <div class="gauge" style="--p: {{ '%.2f'|format(proba * 100) }}">
+            <div class="gauge-inner">
+                <div class="gauge-number">{{ '%.0f'|format(proba * 100) }}%</div>
+                <div class="gauge-label">attrition risk</div>
+            </div>
+        </div>
+        <div class="gauge-legend">
+            <span><i class="g-green"></i> Low &lt;25%</span>
+            <span><i style="background:var(--warn)"></i> Mod &lt;50%</span>
+            <span><i style="background:var(--bad)"></i> High</span>
+        </div>
         <span class="risk-badge {{ level }}">{{ label }}</span>
-        <p class="risk-note">
-            Logistic regression, all {{ field_count }} signals considered.
-        </p>
+        <p class="risk-note">Tuned logistic regression on 30 validated HR signals &middot; SHAP-explained.</p>
     </section>
 
+    <!-- Top factors -->
     <section class="card">
-        <h2>Why is this person at risk?</h2>
-        <img class="waterfall" src="data:image/png;base64,{{ waterfall }}" alt="SHAP waterfall">
-        <p class="muted">SHAP waterfall: red pushes risk up, blue pushes it down.</p>
-    </section>
-
-    <section class="card">
-        <h2>Top pushing factors</h2>
+        <div class="section-head">
+            <span class="section-dot"></span>
+            <h2>What is pushing this person away?</h2>
+        </div>
         <ul class="factor-list">
             {% for f in factors %}
-            <li>{{ loop.index }}. <span class="factor">{{ f['factor'] }}</span>
-                <span class="shap">({{ '%+.2f'|format(f['shap']) }})</span></li>
+            <li>
+                <span class="factor-rank">{{ loop.index }}</span>
+                <span class="factor">{{ f['factor'] }}</span>
+                <span class="factor-bar"><i style="width:{{ (f['shap'] * 130)|round|int }}%;max-width:100%"></i></span>
+                <span class="shap">+{{ '%.2f'|format(f['shap']) }}</span>
+            </li>
             {% endfor %}
         </ul>
     </section>
 
+    <!-- Waterfall -->
     <section class="card">
-        <h2>Retention action plan</h2>
+        <div class="section-head">
+            <span class="section-dot"></span>
+            <h2>Why this risk score?</h2>
+        </div>
+        <div class="waterfall-wrap">
+            <img class="waterfall" src="data:image/png;base64,{{ waterfall }}" alt="SHAP waterfall">
+            <p class="waterfall-caption">SHAP waterfall &mdash; bars to the right increase attrition risk, bars to the left reduce it.</p>
+        </div>
+    </section>
+
+    <!-- Action plan -->
+    <section class="card">
+        <div class="section-head">
+            <span class="section-dot"></span>
+            <h2>Recommended retention actions</h2>
+        </div>
         <ul class="action-list">
             {% for item in plan %}
             <li><span class="check">&#10003;</span> {{ item }}</li>
@@ -53,30 +82,46 @@
         </ul>
     </section>
 
+    <!-- What-if -->
     <section class="card">
-        <h2>What-if simulations (single lever, no retraining)</h2>
+        <div class="section-head">
+            <span class="section-dot"></span>
+            <h2>What-if simulator</h2>
+            <span class="sub">single lever &middot; no retraining</span>
+        </div>
         <table class="sim-table">
             <thead>
-                <tr><th>Change</th><th>New risk</th><th>Drop</th></tr>
+                <tr><th>Change</th><th>New risk</th><th>Risk drop</th></tr>
             </thead>
             <tbody>
                 {% for s in sims %}
                 <tr>
                     <td>{{ s['label'] }}</td>
-                    <td>{{ '%.0f'|format(s['new_proba'] * 100) }}%</td>
-                    <td class="drop">{{ '%.1f'|format(s['drop'] * 100) }}pp</td>
+                    <td class="new-risk {{ 'good' if s['new_proba'] <= 0.25 else ('warn' if s['new_proba'] <= 0.5 else 'high') }}">{{ '%.0f'|format(s['new_proba'] * 100) }}%</td>
+                    <td class="drop"><span class="arrow">&#9660;</span> {{ '%.1f'|format(s['drop'] * 100) }}pp</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </section>
 
-    <p class="footer-note">
-        <a href="{{ url_for('index') }}">&larr; Run another prediction</a>
-        &middot; EmployeeEdge
-    </p>
-
+    <!-- Profile -->
+    <section class="card">
+        <div class="section-head">
+            <span class="section-dot"></span>
+            <h2>Employee profile</h2>
+        </div>
+        <div class="tag-cloud">
+            {% for k, v in fields.items() %}
+            <span class="tag"><b>{{ k }}:</b> {{ v }}</span>
+            {% endfor %}
+        </div>
+    </section>
 </main>
+
+<footer class="footer">
+    <a href="{{ url_for('index') }}">&larr; Run another prediction</a> &middot; EmployeeEdge &middot; HR Analytics Capstone
+</footer>
 
 </body>
 </html>

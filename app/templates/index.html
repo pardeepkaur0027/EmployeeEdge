@@ -3,23 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmployeeEdge -- Attrition Risk Predictor</title>
+    <title>EmployeeEdge &middot; Attrition Risk &amp; Retention Planner</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <header class="hero">
     <div class="wrap">
-        <h1 class="logo-text">EmployeeEdge</h1>
-        <p class="tagline">Predict who is at risk of leaving &mdash; understand <em>why</em> &mdash; get a ready action plan.</p>
+        <div class="brand-row">
+            <span class="brand-mark">E</span>
+            <h1 class="logo-text">EmployeeEdge</h1>
+            <span class="hero-brand-badge">HR ANALYTICS</span>
+        </div>
+        <p class="tagline">Predict who is at risk of leaving &mdash; understand <em>why</em> with SHAP &mdash; and get a <em>ready retention plan</em>.</p>
+        <div class="stat-pills">
+            <span class="stat-pill"><b>1,470</b> employees</span>
+            <span class="stat-pill"><b>16%</b> attrition rate</span>
+            <span class="stat-pill"><b>AUC 0.81</b> tested model</span>
+            <span class="stat-pill"><b>30</b> validated signals</span>
+        </div>
     </div>
 </header>
 
 <main class="wrap">
+
+    <section class="steps">
+        <div class="step">
+            <span class="step-num">1</span>
+            <p><b>Fill the profile</b><br>All 30 HR fields, pre-filled with sensible defaults.</p>
+        </div>
+        <div class="step">
+            <span class="step-num">2</span>
+            <p><b>Get the risk</b><br>A transparent 0&ndash;100% score, explained by SHAP.</p>
+        </div>
+        <div class="step">
+            <span class="step-num">3</span>
+            <p><b>Act</b><br>Concrete retention actions plus what-if levers.</p>
+        </div>
+    </section>
+
     <form method="POST" action="{{ url_for('predict') }}">
         {% for group_name, field_names in field_groups %}
-        <fieldset class="card">
-            <legend>{{ group_name }}</legend>
+        <fieldset class="cfg-card">
+            <legend class="legend">
+                <span class="legend-icon">{{ loop.index }}</span>
+                {{ group_name }}
+            </legend>
             <div class="grid">
                 {% for fname in field_names %}
                 {% set spec = defs[fname] %}
@@ -43,12 +72,15 @@
         </fieldset>
         {% endfor %}
 
-        <button type="submit" class="btn-primary">Predict Attrition Risk</button>
+        <div class="center">
+            <button type="submit" class="btn-primary">Predict Attrition Risk</button>
+        </div>
     </form>
+
 </main>
 
 <footer class="footer">
-    <p>EmployeeEdge &middot; HR Analytics Capstone &middot; LogisticRegression + SHAP</p>
+    EmployeeEdge &middot; LogisticRegression + SHAP &middot; HR Analytics Capstone
 </footer>
 
 </body>
