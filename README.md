@@ -7,6 +7,8 @@ plan** — with what-if levers they can pull without retraining.
 > **Status:** complete. All notebooks executed; model, SHAP explainers and the
 > Flask web app are verified end-to-end (`smoke_test.py` + `app_smoke_test.py`).
 
+> **Live:** 🔗 https://employeeedge.onrender.com — try a prediction now.
+
 ---
 
 ## 1. The problem
