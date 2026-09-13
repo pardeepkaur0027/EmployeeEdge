@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: employeeedge
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r app/requirements.txt
+    startCommand: gunicorn -w 1 --timeout 120 -b 0.0.0.0:$PORT app:app
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
