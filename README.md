@@ -79,7 +79,7 @@ Intervening on the **top 30 highest-risk** test employees:
 On Render (free web service):
 
 - Build command: `pip install -r requirements.txt`
-- Start command: `gunicorn -w 1 -b 0.0.0.0:$PORT 'app:app'`
+- Start command: `gunicorn -w 1 --timeout 120 -b 0.0.0.0:$PORT app.app:app`
 - The model artifact lives in `outputs/models/model.joblib` and loads at first
   request (lazy, ~1 s on Render's free tier).
 
