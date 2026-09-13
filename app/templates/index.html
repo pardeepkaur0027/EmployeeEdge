@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmployeeEdge -- Attrition Risk Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="hero">
+    <div class="wrap">
+        <h1 class="logo-text">EmployeeEdge</h1>
+        <p class="tagline">Predict who is at risk of leaving &mdash; understand <em>why</em> &mdash; get a ready action plan.</p>
+    </div>
+</header>
+
+<main class="wrap">
+    <form method="POST" action="{{ url_for('predict') }}">
+        {% for group_name, field_names in field_groups %}
+        <fieldset class="card">
+            <legend>{{ group_name }}</legend>
+            <div class="grid">
+                {% for fname in field_names %}
+                {% set spec = defs[fname] %}
+                <label class="field">
+                    <span class="field-label">{{ spec[1] }}</span>
+                    {% if spec[2] == "select" %}
+                    <select name="{{ fname }}">
+                        {% for opt in spec[4]["options"] %}
+                        <option value="{{ opt }}" {{ "selected" if opt == spec[3] else "" }}>{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <input type="number" name="{{ fname }}"
+                           min="{{ spec[4].get('min', '') }}"
+                           max="{{ spec[4].get('max', '') }}"
+                           value="{{ spec[3] }}" step="1" required>
+                    {% endif %}
+                </label>
+                {% endfor %}
+            </div>
+        </fieldset>
+        {% endfor %}
+
+        <button type="submit" class="btn-primary">Predict Attrition Risk</button>
+    </form>
+</main>
+
+<footer class="footer">
+    <p>EmployeeEdge &middot; HR Analytics Capstone &middot; LogisticRegression + SHAP</p>
+</footer>
+
+</body>
+</html>
